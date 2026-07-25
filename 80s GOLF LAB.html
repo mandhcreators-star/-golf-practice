@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Golf Practice 60 v0.2</title>
+<style>
+:root{--bg:#f4f6f3;--card:#fff;--ink:#17231d;--muted:#69746e;--line:#dfe5e0;--accent:#275e43;--accent2:#e3eee7;--warn:#8a5c19;--soft:#f7f9f7;--shadow:0 8px 28px rgba(20,40,28,.08)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;background:var(--bg);color:var(--ink)}
+button,textarea{font:inherit}.app{min-height:100vh;padding:max(20px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:18px}.brand{font-size:18px;font-weight:900;letter-spacing:.08em}.pill{padding:8px 12px;background:#fff;border:1px solid var(--line);border-radius:999px;font-weight:700;color:var(--muted)}
+.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,.75fr);gap:18px;max-width:1180px;margin:auto}.card{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.main{padding:26px 28px 28px;display:flex;flex-direction:column;min-height:650px}.side{padding:22px}.kicker{font-size:14px;font-weight:900;color:var(--accent);letter-spacing:.08em}.stage-title{font-size:32px;font-weight:950;margin:6px 0 4px}.sub{color:var(--muted);font-size:16px}
+.hero{margin:auto 0;text-align:center;padding:28px 12px}.club{font-size:22px;font-weight:800;color:var(--muted)}.focus{font-size:46px;line-height:1.15;font-weight:950;margin:16px auto;max-width:720px;letter-spacing:-.03em}.cue{font-size:20px;font-weight:850;background:var(--accent2);display:inline-block;padding:12px 18px;border-radius:15px}.notes{margin-top:18px;color:var(--muted);line-height:1.8;font-size:16px}.output{margin-top:18px;display:inline-flex;gap:10px;align-items:center;font-weight:800}.output strong{font-size:34px;color:var(--accent)}
+.action{display:flex;gap:12px;align-items:center;margin-top:auto}.hit{flex:1;border:0;background:var(--accent);color:white;border-radius:18px;padding:20px;font-size:21px;font-weight:900;box-shadow:0 8px 16px rgba(39,94,67,.18)}.hit:active{transform:translateY(1px)}.reset{border:1px solid var(--line);background:white;border-radius:18px;padding:19px 18px;font-weight:800;color:var(--muted)}
+.progress{height:12px;background:#e8ece9;border-radius:999px;overflow:hidden;margin:10px 0 18px}.bar{height:100%;background:var(--accent);width:0;transition:.25s}.count{display:flex;justify-content:space-between;align-items:end}.count strong{font-size:34px}.count span{color:var(--muted);font-weight:700}.section{border-top:1px solid var(--line);padding-top:18px;margin-top:18px}.section:first-child{border-top:0;padding-top:0;margin-top:0}.section h3{font-size:15px;margin:0 0 12px;color:var(--muted)}
+.obs{display:grid;gap:10px}.obs-row{display:flex;align-items:center;justify-content:space-between;background:var(--soft);border-radius:14px;padding:12px 14px}.obs-row b{font-size:14px}.score{font-weight:900;color:var(--accent)}.theme{font-size:21px;font-weight:900;line-height:1.45}.small{font-size:13px;color:var(--muted);line-height:1.55}.history{display:grid;gap:8px;max-height:180px;overflow:auto}.hist{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:13px}.hist b{display:block;margin-bottom:3px}
+.modal{position:fixed;inset:0;background:rgba(15,24,19,.48);display:none;align-items:center;justify-content:center;padding:24px;z-index:10}.modal.show{display:flex}.modal-card{width:min(640px,100%);background:white;border-radius:24px;padding:24px;box-shadow:0 18px 60px rgba(0,0,0,.22)}.modal-card h2{margin:0 0 6px}.modal-card p{color:var(--muted);margin:0 0 18px}.eval{display:grid;gap:12px}.eval-line{display:grid;grid-template-columns:1fr 130px 130px;gap:10px;align-items:center}.choice{border:1px solid var(--line);background:white;border-radius:14px;padding:13px;font-weight:900}.choice.active.good{background:#e6f1ea;border-color:#a9c8b4;color:#245d40}.choice.active.mid{background:#f8edda;border-color:#dfc594;color:#825716}.modal-actions{display:flex;justify-content:flex-end;margin-top:20px}.next{border:0;background:var(--accent);color:white;border-radius:14px;padding:14px 22px;font-weight:900}.next:disabled{opacity:.35}
+.summary{display:none}.summary.show{display:block}.summary h1{font-size:38px;margin-bottom:8px}.summary-wrap{max-width:1050px;margin:auto}.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}.mini{background:var(--soft);border-radius:18px;padding:18px}.mini h3{margin:0 0 12px;font-size:15px;color:var(--muted)}
+.radar-wrap{display:flex;justify-content:center;align-items:center;min-height:330px}.radar{width:min(100%,400px);height:auto;overflow:visible}.radar-grid{fill:none;stroke:#d8dfda;stroke-width:1}.radar-axis{stroke:#d8dfda;stroke-width:1}.radar-shape{fill:rgba(39,94,67,.18);stroke:var(--accent);stroke-width:3;stroke-linejoin:round}.radar-dot{fill:var(--accent)}.radar-label{font-size:12px;font-weight:800;fill:#425149}.radar-value{font-size:11px;font-weight:900;fill:var(--accent)}
+.metric-list{display:grid;gap:8px;margin-top:8px}.metric-row{display:grid;grid-template-columns:1fr 52px;gap:10px;align-items:center;background:white;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.metric-row b{font-size:14px}.metric-row span{text-align:right;font-weight:900;color:var(--accent)}
+.coach{background:#eef5f0;border:1px solid #cfe0d5;border-radius:18px;padding:18px;margin-top:16px}.coach-title{font-size:13px;font-weight:950;letter-spacing:.08em;color:var(--accent);margin-bottom:10px}.coach-main{font-size:22px;font-weight:950;line-height:1.45;margin-bottom:10px}.coach p{margin:0;color:#425149;line-height:1.75}.rx{margin-top:14px;background:white;border-radius:14px;padding:14px 16px}.rx b{display:block;margin-bottom:5px}.seg{display:flex;gap:8px;flex-wrap:wrap}.seg button{border:1px solid var(--line);background:white;border-radius:12px;padding:11px 14px;font-weight:800}.seg button.active{background:var(--accent);color:white;border-color:var(--accent)}textarea{width:100%;min-height:100px;border:1px solid var(--line);border-radius:14px;padding:12px;resize:vertical}.save{margin-top:14px;width:100%;border:0;background:var(--accent);color:white;border-radius:14px;padding:16px;font-weight:900}.note{font-size:12px;color:var(--muted);line-height:1.55;margin-top:10px}
+@media(max-width:800px){.grid,.summary-grid{grid-template-columns:1fr}.main{min-height:560px}.side{order:-1}.focus{font-size:36px}.eval-line{grid-template-columns:1fr 90px 90px}.radar-wrap{min-height:290px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><div class="brand">GOLF PRACTICE 60 <span style="color:var(--muted);font-size:12px">v0.2</span></div><div class="pill" id="datePill"></div></div>
+  <div class="grid" id="practiceView">
+    <main class="card main">
+      <div class="kicker" id="stageKicker">STAGE 1 / 4</div><div class="stage-title" id="stageTitle">小さいアプローチ</div><div class="sub" id="stageSub">15球</div>
+      <div class="hero"><div class="club" id="clubText">54° ・ 20〜30yd</div><div class="focus" id="focusText">最下点を作る</div><div class="cue">胸郭で縦ブランコを最後まで運ぶ</div><div class="output" id="outputBox" style="display:none">今回の出力 <strong id="outputText">60%</strong></div><div class="notes" id="notesText"></div></div>
+      <div class="action"><button class="reset" id="resetBtn">最初から</button><button class="hit" id="hitBtn">1球打った</button></div>
+    </main>
+    <aside class="card side">
+      <div class="section"><div class="count"><strong><span id="totalNow">0</span> / 60</strong><span id="stageCount">0 / 15球</span></div><div class="progress"><div class="bar" id="progressBar"></div></div></div>
+      <div class="section"><h3>今日のテーマ</h3><div class="theme">胸郭で縦ブランコを<br>最後まで運ぶ。</div></div>
+      <div class="section"><h3>直近5球の観察</h3><div class="obs"><div class="obs-row"><b>① 最下点</b><span class="score" id="s1">—</span></div><div class="obs-row"><b>② 出力を足さない</b><span class="score" id="s2">—</span></div><div class="obs-row"><b>③ フィニッシュ3秒</b><span class="score" id="s3">—</span></div></div></div>
+      <div class="section"><h3>この練習のルール</h3><div class="small">球筋よりメカニックを評価。80%で崩れたら戻す。ナイスショットでも、出力を足したりフィニッシュが崩れたら△。</div></div>
+      <div class="section"><h3>最近の記録</h3><div class="history" id="history"></div></div>
+    </aside>
+  </div>
+
+  <div class="summary summary-wrap" id="summaryView">
+    <div class="card main" style="min-height:auto">
+      <div class="kicker">SESSION COMPLETE</div><h1>60球、おつかれさま。</h1><p class="sub">今日は「ナイスショット」ではなく、メカニックの再現性を評価します。</p>
+      <div class="summary-grid">
+        <div class="mini"><h3>今日のスイング五角形</h3><div class="radar-wrap"><svg id="radarSvg" class="radar" viewBox="0 0 400 360" aria-label="練習評価レーダーチャート"></svg></div><div class="note">○=100点、△=50点として集計。再現性と出力耐性は3項目の組み合わせから算出。</div></div>
+        <div class="mini"><h3>5項目スコア</h3><div class="metric-list" id="metricList"></div><div class="coach" id="coachBox"><div class="coach-title">COACH COMMENT</div><div class="coach-main" id="coachMain"></div><p id="coachText"></p><div class="rx"><b>次回の強化メニュー</b><span id="coachRx"></span></div></div></div>
+      </div>
+      <div class="summary-grid">
+        <div class="mini"><h3>今日もっとも安定した出力</h3><div class="seg" id="bestOutput"><button>60%</button><button>70%</button><button>80%</button></div></div>
+        <div class="mini"><h3>体感としての今日のメカニック</h3><div class="seg" id="mechanic"><button>◎ 安定</button><button>○ まずまず</button><button>△ 要調整</button></div></div>
+      </div>
+      <div style="margin-top:16px"><h3>次回へのメモ</h3><textarea id="memo" placeholder="例：80%で右手が出やすい。70%に戻すとすぐ修正できた。"></textarea></div>
+      <button class="save" id="saveBtn">記録を保存して終了</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="modal-card"><h2>5球セットを評価</h2><p id="evalTitle"></p><div class="eval">
+  <div class="eval-line"><b>① 最下点を感じられた</b><button class="choice good" data-row="0" data-val="○">○</button><button class="choice mid" data-row="0" data-val="△">△</button></div>
+  <div class="eval-line"><b>② 出力を足さなかった</b><button class="choice good" data-row="1" data-val="○">○</button><button class="choice mid" data-row="1" data-val="△">△</button></div>
+  <div class="eval-line"><b>③ フィニッシュ3秒</b><button class="choice good" data-row="2" data-val="○">○</button><button class="choice mid" data-row="2" data-val="△">△</button></div>
+</div><div class="modal-actions"><button class="next" id="nextBtn" disabled>次へ</button></div></div></div>
+<script>
+const stages=[
+ {title:'小さいアプローチ',sub:'15球',club:'54° ・ 20〜30yd',focus:'最下点を作る',notes:'クラブの重さに任せる<br>ボールを打ちにいかない<br>インパクトで出力を足さない',outputs:null},
+ {title:'9I ハーフ',sub:'15球',club:'9I',focus:'出力が変わっても動きを変えない',notes:'縦アーク → 胸郭 → 最下点 → フィニッシュ<br>80%で崩れたら70%へ戻す',outputs:['50〜60%','60〜70%','70〜80%']},
+ {title:'出力耐性テスト',sub:'15球',club:'9I または 7W',focus:'出力を変えてもメカニックを変えない',notes:'80%だけ右手を足さない<br>60%へ戻した時に元のスイングへ戻れるか',pattern:[60,70,80,70,60]},
+ {title:'ドライバー',sub:'15球',club:'Driver',focus:'一番大きな縦ブランコを運ぶ',notes:'飛距離を追わない<br>毎球フィニッシュ3秒静止',outputs:['60%','70%','80%']}
+];
+let stage=0,stageBall=0,total=0,pendingEval=[null,null,null],evals=[]; const $=id=>document.getElementById(id);
+$('datePill').textContent=new Intl.DateTimeFormat('ja-JP',{month:'numeric',day:'numeric',weekday:'short'}).format(new Date());
+function currentOutput(){const s=stages[stage];if(s.pattern)return s.pattern[stageBall%s.pattern.length]+'%';if(s.outputs)return s.outputs[Math.min(2,Math.floor(stageBall/5))];return null;}
+function render(){const s=stages[stage];$('stageKicker').textContent=`STAGE ${stage+1} / 4`;$('stageTitle').textContent=s.title;$('stageSub').textContent=s.sub;$('clubText').textContent=s.club;$('focusText').textContent=s.focus;$('notesText').innerHTML=s.notes;const out=currentOutput();$('outputBox').style.display=out?'inline-flex':'none';$('outputText').textContent=out||'';$('totalNow').textContent=total;$('stageCount').textContent=`${stageBall} / 15球`;$('progressBar').style.width=(total/60*100)+'%';renderLatestScores();renderHistory();}
+function renderLatestScores(){const recent=evals.length?evals[evals.length-1].scores:null;['s1','s2','s3'].forEach((id,i)=>$(id).textContent=recent?recent[i]:'—');}
+function hit(){stageBall++;total++;if(stageBall%5===0)openEval();else render();}
+function openEval(){pendingEval=[null,null,null];document.querySelectorAll('.choice').forEach(b=>b.classList.remove('active'));$('evalTitle').textContent=`Stage ${stage+1}・${stageBall/5}セット目（${stageBall-4}〜${stageBall}球）`;$('nextBtn').disabled=true;$('modal').classList.add('show');render();}
+document.querySelectorAll('.choice').forEach(btn=>btn.addEventListener('click',()=>{const row=+btn.dataset.row;pendingEval[row]=btn.dataset.val;document.querySelectorAll(`.choice[data-row="${row}"]`).forEach(b=>b.classList.remove('active'));btn.classList.add('active');$('nextBtn').disabled=pendingEval.some(v=>!v);}));
+$('nextBtn').onclick=()=>{evals.push({stage:stage+1,set:stageBall/5,scores:[...pendingEval]});$('modal').classList.remove('show');if(stageBall>=15){if(stage>=3){showSummary();return;}stage++;stageBall=0;}render();};
+function scoreVal(v){return v==='○'?100:50;}
+function average(arr){return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0;}
+function calculateMetrics(){
+ const low=average(evals.map(e=>scoreVal(e.scores[0])));
+ const output=average(evals.map(e=>scoreVal(e.scores[1])));
+ const finish=average(evals.map(e=>scoreVal(e.scores[2])));
+ const reproducibility=average(evals.map(e=>e.scores.every(x=>x==='○')?100:(e.scores.filter(x=>x==='○').length===2?67:(e.scores.filter(x=>x==='○').length===1?33:0))));
+ const highSets=evals.filter(e=>(e.stage===2&&e.set===3)||e.stage===3||(e.stage===4&&e.set===3));
+ const tolerance=average(highSets.map(e=>average(e.scores.map(scoreVal))));
+ return {labels:['最下点','出力管理','フィニッシュ','再現性','出力耐性'],values:[low,output,finish,reproducibility,tolerance]};
+}
+function drawRadar(metrics){const svg=$('radarSvg'),cx=200,cy=175,R=118,n=5;svg.innerHTML='';const NS='http://www.w3.org/2000/svg';const pt=(r,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+r*Math.cos(a),cy+r*Math.sin(a)]};const poly=(points,cls)=>{const p=document.createElementNS(NS,'polygon');p.setAttribute('points',points.map(x=>x.join(',')).join(' '));p.setAttribute('class',cls);svg.appendChild(p)};
+ [0.25,0.5,0.75,1].forEach(k=>poly([...Array(n)].map((_,i)=>pt(R*k,i)),'radar-grid'));
+ for(let i=0;i<n;i++){const [x,y]=pt(R,i),l=document.createElementNS(NS,'line');l.setAttribute('x1',cx);l.setAttribute('y1',cy);l.setAttribute('x2',x);l.setAttribute('y2',y);l.setAttribute('class','radar-axis');svg.appendChild(l);}
+ const dataPts=metrics.values.map((v,i)=>pt(R*v/100,i));poly(dataPts,'radar-shape');dataPts.forEach(([x,y])=>{const c=document.createElementNS(NS,'circle');c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',4);c.setAttribute('class','radar-dot');svg.appendChild(c)});
+ metrics.labels.forEach((label,i)=>{const [x,y]=pt(R+32,i);const t=document.createElementNS(NS,'text');t.textContent=label;t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','middle');t.setAttribute('class','radar-label');svg.appendChild(t);const [vx,vy]=pt(R+49,i);const v=document.createElementNS(NS,'text');v.textContent=metrics.values[i];v.setAttribute('x',vx);v.setAttribute('y',vy);v.setAttribute('text-anchor','middle');v.setAttribute('dominant-baseline','middle');v.setAttribute('class','radar-value');svg.appendChild(v);});
+}
+function coachComment(metrics){
+ const pairs=metrics.labels.map((l,i)=>({label:l,val:metrics.values[i],i}));const weakest=[...pairs].sort((a,b)=>a.val-b.val)[0];const strongest=[...pairs].sort((a,b)=>b.val-a.val)[0];let main='',text='',rx='';
+ if(weakest.label==='最下点'){main='強化ポイントは「最下点管理」';text=`${strongest.label}は今日の強みです。一方、最下点の評価が相対的に低め。ボールを打ちにいかず、小さい縦アークを胸郭で運ぶ感覚へ戻しましょう。`;rx='54°で20〜30ydを10〜15球。結果より、同じ場所に最下点を作れるかだけを採点。';}
+ else if(weakest.label==='出力管理'){main='強化ポイントは「インパクトで足さない」';text=`${strongest.label}は安定しています。出力を上げた時ほど、インパクトだけ急に強くしないことが次の課題です。`;rx='9Iで60%→70%→80%→70%→60%。80%を成功させるより、往復しても動きが変わらないことを優先。';}
+ else if(weakest.label==='フィニッシュ'){main='強化ポイントは「最後まで運び切る」';text=`${strongest.label}は良好です。フィニッシュの低下は、途中で出力や軌道を修正している可能性があります。最後まで胸郭で運び切ることを優先しましょう。`;rx='各球フィニッシュ3秒。球筋は見ず、静止できた球だけ○にする10球テスト。';}
+ else if(weakest.label==='再現性'){main='強化ポイントは「3項目を同時に揃える」';text=`単独の動作はできていますが、最下点・出力管理・フィニッシュを同じ球で揃える余地があります。ナイスショットより○○○を増やす段階です。`;rx='5球×3セットで「○○○のセット数」を記録。球数を増やさず質を揃える。';}
+ else {main='強化ポイントは「出力耐性」';text=`${strongest.label}は今日の土台になっています。高めの出力になるとメカニックの再現度が落ちています。80%を振ること自体ではなく、70%と同じ動作のまま80%へ上げることがテーマです。`;rx='9Iまたは7Wで70%→80%→70%を3セット。80%で崩れたら即70%へ戻す。';}
+ if(Math.min(...metrics.values)>=85){main='今日はかなり高い再現性';text='5項目が高い水準で揃っています。ここからは出力を上げるより、この形をラウンドで再現できる出力を見極める段階です。';rx='次回も同じ60球で確認。スコアを上げるための変更はせず、再現できた出力をラウンド基準にする。';}
+ return {main,text,rx};
+}
+function showSummary(){const metrics=calculateMetrics();drawRadar(metrics);$('metricList').innerHTML=metrics.labels.map((l,i)=>`<div class="metric-row"><b>${l}</b><span>${metrics.values[i]}</span></div>`).join('');const c=coachComment(metrics);$('coachMain').textContent=c.main;$('coachText').textContent=c.text;$('coachRx').textContent=c.rx;$('practiceView').style.display='none';$('summaryView').classList.add('show');window.scrollTo({top:0,behavior:'smooth'});}
+function selectGroup(id){$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{$(id).querySelectorAll('button').forEach(x=>x.classList.remove('active'));b.classList.add('active');});}selectGroup('bestOutput');selectGroup('mechanic');
+$('saveBtn').onclick=()=>{const best=$('bestOutput').querySelector('.active')?.textContent||'未選択',mech=$('mechanic').querySelector('.active')?.textContent||'未選択',metrics=calculateMetrics(),coach=coachComment(metrics);const sessions=JSON.parse(localStorage.getItem('golfPractice60')||'[]');sessions.unshift({date:new Date().toISOString(),best,mech,memo:$('memo').value,evals,metrics,coach});localStorage.setItem('golfPractice60',JSON.stringify(sessions.slice(0,20)));alert('保存しました。五角形評価と強化ポイントも記録しました。');location.reload();};
+function renderHistory(){const sessions=JSON.parse(localStorage.getItem('golfPractice60')||'[]');$('history').innerHTML=sessions.length?sessions.slice(0,4).map(x=>`<div class="hist"><b>${new Date(x.date).toLocaleDateString('ja-JP')}　${x.mech}</b>安定出力：${x.best}${x.coach?'<br>重点：'+escapeHtml(x.coach.main.replace('強化ポイントは「','').replace('」','')):''}${x.memo?'<br>'+escapeHtml(x.memo.slice(0,40)):''}</div>`).join(''):'<div class="small">まだ記録はありません。</div>';}
+function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+$('hitBtn').onclick=hit;$('resetBtn').onclick=()=>{if(confirm('今日の進捗を最初からやり直しますか？')){stage=0;stageBall=0;total=0;evals=[];render();}};render();
+</script>
+</body>
+</html>
