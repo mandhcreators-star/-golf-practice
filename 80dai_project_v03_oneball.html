@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>80台プロジェクト v0.3</title>
+  <style>
+    :root{
+      --bg:#f3f4f6; --card:#fff; --text:#111827; --muted:#6b7280;
+      --line:#e5e7eb; --dark:#111827;
+      --good:#166534; --goodbg:#dcfce7;
+      --warn:#92400e; --warnbg:#fef3c7;
+      --bad:#991b1b; --badbg:#fee2e2;
+      --bluebg:#dbeafe; --blue:#1d4ed8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;background:var(--bg);color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    .wrap{max-width:780px;margin:auto;padding:16px 14px 50px}
+    h1{font-size:28px;margin:4px 0}
+    .sub{color:var(--muted);font-size:14px;margin-bottom:14px}
+    .card{
+      background:var(--card);border-radius:18px;padding:17px;margin:12px 0;
+      box-shadow:0 1px 8px rgba(0,0,0,.06);
+    }
+    .hero{background:var(--dark);color:white}
+    .hero .small,.hero .label{color:#d1d5db}
+    .label{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.04em}
+    .big{font-size:22px;font-weight:850;line-height:1.4;margin-top:6px}
+    .small{font-size:14px;color:var(--muted);line-height:1.6}
+    .home-grid{display:grid;gap:12px}
+    .menu{
+      border:1px solid var(--line);border-radius:18px;padding:18px;background:#fff;
+      cursor:pointer;
+    }
+    .menu h2{font-size:20px;margin:0 0 5px}
+    .menu p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
+    .menu .tag{display:inline-block;margin-top:10px;padding:6px 10px;border-radius:999px;background:#f3f4f6;font-size:12px;font-weight:800}
+    button{
+      border:0;border-radius:13px;padding:13px 10px;font-size:15px;font-weight:800;
+      background:#e5e7eb;color:#111827;cursor:pointer
+    }
+    button.primary{background:#111827;color:white}
+    button.good{background:var(--goodbg);color:var(--good)}
+    button.warn{background:var(--warnbg);color:var(--warn)}
+    button.bad{background:var(--badbg);color:var(--bad)}
+    button.blue{background:var(--bluebg);color:var(--blue)}
+    button.active{outline:3px solid #111827;outline-offset:1px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+    .grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+    .section{display:none}
+    .section.active{display:block}
+    .topbar{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+    .back{padding:9px 12px;border-radius:999px}
+    .progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:10px}
+    .progress span{display:block;height:100%;background:#111827;width:0;transition:.2s}
+    .score{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}
+    .score div{background:#f9fafb;border:1px solid var(--line);border-radius:13px;text-align:center;padding:10px 5px}
+    .score strong{display:block;font-size:21px}
+    .cue{background:#f9fafb;border-left:4px solid #111827;border-radius:12px;padding:12px;margin-top:10px;font-weight:750;line-height:1.55}
+    .pill{display:inline-block;background:#f3f4f6;border-radius:999px;padding:6px 9px;font-size:12px;margin:4px 4px 0 0}
+    .phase{font-size:14px;font-weight:850;margin:3px 0 7px}
+    .history{max-height:240px;overflow:auto;margin-top:10px;border-top:1px solid var(--line)}
+    .row{display:grid;grid-template-columns:48px 1fr 92px;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+    .course-card{border:1px solid var(--line);border-radius:14px;padding:13px;margin-top:10px}
+    .course-card strong{display:block;font-size:17px;margin-bottom:4px}
+    .practice-list{display:grid;gap:8px;margin-top:10px}
+    .practice-item{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:13px;padding:11px 12px;background:#fafafa}
+    .practice-item.done{background:var(--goodbg)}
+    .practice-item .meta{font-size:12px;color:var(--muted)}
+    .footer{text-align:center;font-size:12px;color:var(--muted);margin-top:18px}
+
+    .routine-line{
+      background:#111827;color:#fff;border-radius:13px;padding:12px 13px;
+      font-weight:850;line-height:1.55;margin-top:10px
+    }
+    details{
+      margin-top:10px;border:1px solid var(--line);border-radius:14px;
+      padding:11px 12px;background:#fff
+    }
+    summary{font-weight:850;cursor:pointer}
+    textarea{
+      width:100%;min-height:80px;border:1px solid var(--line);border-radius:13px;
+      padding:12px;font-size:15px;font-family:inherit;resize:vertical;
+      background:#fff;color:var(--text)
+    }
+    .saved-note{
+      white-space:pre-wrap;background:#f9fafb;border:1px solid var(--line);
+      border-radius:13px;padding:11px 12px;margin-top:8px;font-size:14px;line-height:1.6
+    }
+    .focus-card{
+      border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:9px;background:#fafafa
+    }
+    .focus-card strong{display:block;margin-bottom:3px;font-size:14px}
+
+    @media(max-width:520px){
+      .score{grid-template-columns:1fr 1fr}
+      .grid5{grid-template-columns:repeat(5,1fr)}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <section id="home" class="section active">
+    <h1>80台プロジェクト</h1>
+    <div class="sub">判断と再現性で80台を作る。v0.3</div>
+
+    <div class="card hero">
+      <div class="label">CORE PRINCIPLE</div>
+      <div class="big">ナイスショットを狙わない。判断と再現性を積み上げる。</div>
+      <div class="small">縦アーク・最下点管理・一定出力・胸郭で運ぶ。</div>
+    </div>
+
+    <div class="home-grid">
+      <div class="menu" onclick="showSection('practice')">
+        <h2>Practice 60</h2>
+        <p>60球前後で段階的に練習。ルーティンと強化ポイントも確認。</p>
+        <span class="tag">普段の練習</span>
+      </div>
+
+      <div class="menu" onclick="showSection('swing')">
+        <h2>Swing Lab</h2>
+        <p>最下点・出力・フィニッシュを、気に入っている1球ごとの○△×で確認。</p>
+        <span class="tag">調整・診断</span>
+      </div>
+
+      <div class="menu" onclick="showSection('course')">
+        <h2>Course Mode</h2>
+        <p>15〜100yのショートゲーム判断基準を、ラウンド中に素早く確認。</p>
+        <span class="tag">ラウンド判断</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="practice" class="section">
+    <div class="topbar">
+      <button class="back" onclick="showSection('home')">← 戻る</button>
+      <strong>Practice 60</strong>
+    </div>
+
+    <div class="card hero">
+      <div class="label">TODAY'S CUE</div>
+      <div class="big">胸郭で縦ブランコを最後まで運ぶ。</div>
+      <div class="small">球数より、同じ動きを再現できたか。</div>
+    </div>
+
+
+    <div class="card">
+      <div class="label">ROUTINE</div>
+      <div class="big">ショット前ルーティン</div>
+      <div class="routine-line">一呼吸 → 逆素振り → 下から確認 → 胸郭で運ぶ → 3秒静止</div>
+      <details>
+        <summary>詳細を見る</summary>
+        <div class="small" style="margin-top:9px;line-height:1.8">
+          ① 一呼吸して力みをリセット<br>
+          ② フィニッシュから逆素振り。胸郭と縦アークのつながりを確認<br>
+          ③ 下からターゲット・ボール位置を確認<br>
+          ④ 右肘が身体の前の空間にあるか確認<br>
+          ⑤ インパクトで出力を足さず、胸郭で最後まで運ぶ<br>
+          ⑥ フィニッシュで3秒静止
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <div class="label">TODAY'S COMMENT</div>
+      <div class="big">今日の強化テーマ</div>
+      <textarea id="todayComment" placeholder="例：インパクトで出力を足さない"></textarea>
+      <button class="primary" onclick="saveTodayComment()" style="width:100%;margin-top:9px">保存</button>
+      <div class="saved-note" id="todayCommentSaved">未入力</div>
+    </div>
+
+    <div class="card">
+      <div class="label">PROGRAM</div>
+      <div class="big">60球メニュー</div>
+      <div class="practice-list" id="practiceList"></div>
+      <div class="progress"><span id="practiceBar"></span></div>
+      <div class="small" id="practiceProgressText" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">TODAY</div>
+      <div class="big">練習メモ</div>
+      <div class="grid2">
+        <button class="good" onclick="addPracticeMemo('最下点が安定')">最下点が安定</button>
+        <button class="warn" onclick="addPracticeMemo('出力が上がった')">出力が上がった</button>
+        <button class="blue" onclick="addPracticeMemo('胸郭と同期')">胸郭と同期</button>
+        <button class="bad" onclick="addPracticeMemo('バランス崩れ')">バランス崩れ</button>
+      </div>
+      <div id="practiceMemos" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">AFTER PRACTICE</div>
+      <div class="big">今日の発見・次回課題</div>
+      <textarea id="afterComment" placeholder="例：7Wは70%まで安定。80%で右手を足しやすい。"></textarea>
+      <button class="primary" onclick="saveAfterComment()" style="width:100%;margin-top:9px">保存</button>
+      <div class="saved-note" id="afterCommentSaved">未入力</div>
+    </div>
+  </section>
+
+  <section id="swing" class="section">
+    <div class="topbar">
+      <button class="back" onclick="showSection('home')">← 戻る</button>
+      <strong>Swing Lab</strong>
+    </div>
+
+    <div class="card hero">
+      <div class="label">CORE CUE</div>
+      <div class="big">インパクトで何もしない。</div>
+      <div class="small">最下点を管理し、胸郭で縦ブランコを運ぶ。</div>
+    </div>
+
+    <div class="card">
+      <div class="label">ROUTINE</div>
+      <div class="routine-line">一呼吸 → 逆素振り → 下から確認 → 胸郭で運ぶ → 3秒静止</div>
+      <div class="small" style="margin-top:8px">逆素振りで違和感が出る場所は、その日の確認ポイント。</div>
+    </div>
+
+    <div class="card">
+      <div class="label">FOCUS</div>
+      <div class="big" id="swingFocusTitle">ウェッジ</div>
+      <div class="focus-card">
+        <strong>強化ポイント</strong>
+        <div class="small" id="swingStrength"></div>
+      </div>
+      <div class="focus-card">
+        <strong>注意点</strong>
+        <div class="small" id="swingCaution"></div>
+      </div>
+      <div class="focus-card">
+        <strong>意識</strong>
+        <div class="small" id="swingCueText"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">CLUB</div>
+      <div class="grid2" id="clubButtons">
+        <button data-club="ウェッジ">ウェッジ</button>
+        <button data-club="9I">9I</button>
+        <button data-club="5UT">5UT</button>
+        <button data-club="7W">7W</button>
+        <button data-club="Driver">Driver</button>
+      </div>
+      <div class="cue" id="clubCue"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">OUTPUT</div>
+      <div class="grid3" id="powerLevel">
+        <button data-level="60%">60%</button>
+        <button data-level="70%">70%</button>
+        <button data-level="80%">80%</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="phase">① 最下点</div>
+      <div class="grid2" id="lowButtons">
+        <button class="good" data-low="○">○ 安定</button>
+        <button class="warn" data-low="△">△ 微妙</button>
+        <button class="bad" data-low="×">× ズレた</button>
+        <button data-low="?">？ 不明</button>
+      </div>
+
+      <div class="phase" style="margin-top:13px">② インパクトで出力を足した？</div>
+      <div class="grid2" id="impactButtons">
+        <button class="good" data-impact="○">○ 足してない</button>
+        <button class="warn" data-impact="△">△ 少し</button>
+        <button class="bad" data-impact="×">× 足した</button>
+        <button data-impact="?">？ 不明</button>
+      </div>
+
+      <div class="phase" style="margin-top:13px">③ フィニッシュ3秒静止</div>
+      <div class="grid2" id="balanceButtons">
+        <button class="good" data-balance="○">○ 静止</button>
+        <button class="warn" data-balance="△">△ 少し揺れ</button>
+        <button class="bad" data-balance="×">× 崩れた</button>
+        <button data-balance="?">？ 不明</button>
+      </div>
+
+      <button class="primary" id="recordSwingBtn" style="width:100%;margin-top:16px">この1球を記録</button>
+    </div>
+
+    <div class="card">
+      <div class="score">
+        <div><span class="small">球数</span><strong id="sShots">0</strong></div>
+        <div><span class="small">完全○</span><strong id="sPerfect">0</strong></div>
+        <div><span class="small">成功率</span><strong id="sRate">0%</strong></div>
+        <div><span class="small">現在</span><strong id="sClub">W</strong></div>
+      </div>
+      <div class="progress"><span id="sBar"></span></div>
+      <div class="big" id="sFeedback" style="font-size:18px;margin-top:10px">まずウェッジで最下点を確認。</div>
+      <div id="sTags"></div>
+    </div>
+
+
+    <div class="card">
+      <div class="label">LAB COMMENT</div>
+      <div class="big">今日の気付き</div>
+      <textarea id="swingComment" placeholder="例：インパクト前後の上下入れ替えが滑らかだとバランスが崩れない。"></textarea>
+      <button class="primary" onclick="saveSwingComment()" style="width:100%;margin-top:9px">保存</button>
+      <div class="saved-note" id="swingCommentSaved">未入力</div>
+    </div>
+
+    <div class="card">
+      <div class="label">HISTORY</div>
+      <div class="history" id="sHistory"></div>
+      <button onclick="resetSwing()" style="width:100%;margin-top:12px">Swing Labをリセット</button>
+    </div>
+  </section>
+
+  <section id="course" class="section">
+    <div class="topbar">
+      <button class="back" onclick="showSection('home')">← 戻る</button>
+      <strong>Course Mode</strong>
+    </div>
+
+    <div class="card hero">
+      <div class="label">COURSE RULE</div>
+      <div class="big">迷ったら、ピンより安全な再現性。</div>
+      <div class="small">80y以下は狙う。150y以下は中央。170y以上は無理をしない。</div>
+    </div>
+
+    <div class="card">
+      <div class="label">SHORT GAME</div>
+      <div class="big">距離を選択</div>
+      <div class="grid3" id="distanceButtons">
+        <button data-distance="15">15y</button>
+        <button data-distance="20">20y</button>
+        <button data-distance="30">30y</button>
+        <button data-distance="40">40y</button>
+        <button data-distance="50">50y</button>
+        <button data-distance="80">80y</button>
+        <button data-distance="100">100y</button>
+      </div>
+
+      <div class="big" style="font-size:18px;margin-top:14px">ライ・傾斜</div>
+      <div class="grid3" id="lieButtons">
+        <button data-lie="上り">上り</button>
+        <button data-lie="平坦">平坦</button>
+        <button data-lie="下り">下り</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">RECOMMENDATION</div>
+      <div class="course-card">
+        <strong id="courseClub">距離と傾斜を選択</strong>
+        <div class="small" id="courseAdvice">判断基準を表示します。</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">QUICK RULES</div>
+      <div class="course-card"><strong>15〜30y</strong><div class="small">上り・平坦は54°基準。下りは58°を優先。ベアグラウンド・逆目はPW候補。</div></div>
+      <div class="course-card"><strong>80y</strong><div class="small">PWまたは9I。基本は再現性優先。</div></div>
+      <div class="course-card"><strong>100y</strong><div class="small">9Iクォーターを基準。</div></div>
+      <div class="course-card"><strong>170y以上</strong><div class="small">無理にグリーンを狙わず、次打が得意距離になる位置へ。</div></div>
+    </div>
+  </section>
+
+  <div class="footer">80台プロジェクト v0.3 — まず使って、違和感を直す。</div>
+</div>
+
+<script>
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* Practice 60 */
+const practiceItems = [
+  {name:'20〜30y アプローチ', balls:15},
+  {name:'9I ハーフ', balls:10},
+  {name:'5UT', balls:10},
+  {name:'7W', balls:10},
+  {name:'Driver', balls:10},
+  {name:'仕上げ・自由確認', balls:5}
+];
+let practiceDone = JSON.parse(localStorage.getItem('practiceDone80')||'[]');
+let practiceMemos = JSON.parse(localStorage.getItem('practiceMemos80')||'[]');
+let todayComment = localStorage.getItem('todayComment80') || '';
+let afterComment = localStorage.getItem('afterComment80') || '';
+
+function renderPractice(){
+  const list=document.getElementById('practiceList');
+  list.innerHTML=practiceItems.map((x,i)=>`
+    <div class="practice-item ${practiceDone.includes(i)?'done':''}">
+      <div><strong>${x.name}</strong><div class="meta">${x.balls}球</div></div>
+      <button onclick="togglePractice(${i})">${practiceDone.includes(i)?'完了':'未完了'}</button>
+    </div>`).join('');
+  const total=practiceItems.reduce((a,b)=>a+b.balls,0);
+  const done=practiceItems.filter((_,i)=>practiceDone.includes(i)).reduce((a,b)=>a+b.balls,0);
+  document.getElementById('practiceBar').style.width=(done/total*100)+'%';
+  document.getElementById('practiceProgressText').textContent=`${done} / ${total}球分 完了`;
+  document.getElementById('practiceMemos').innerHTML=practiceMemos.map(x=>`<span class="pill">${x}</span>`).join('');
+  const tc=document.getElementById('todayComment');
+  const ac=document.getElementById('afterComment');
+  if(tc){tc.value=todayComment;document.getElementById('todayCommentSaved').textContent=todayComment||'未入力';}
+  if(ac){ac.value=afterComment;document.getElementById('afterCommentSaved').textContent=afterComment||'未入力';}
+}
+function saveTodayComment(){
+  todayComment=document.getElementById('todayComment').value.trim();
+  localStorage.setItem('todayComment80',todayComment);
+  document.getElementById('todayCommentSaved').textContent=todayComment||'未入力';
+}
+function saveAfterComment(){
+  afterComment=document.getElementById('afterComment').value.trim();
+  localStorage.setItem('afterComment80',afterComment);
+  document.getElementById('afterCommentSaved').textContent=afterComment||'未入力';
+}
+function togglePractice(i){
+  practiceDone=practiceDone.includes(i)?practiceDone.filter(x=>x!==i):[...practiceDone,i];
+  localStorage.setItem('practiceDone80',JSON.stringify(practiceDone));
+  renderPractice();
+}
+function addPracticeMemo(m){
+  practiceMemos.push(m);
+  localStorage.setItem('practiceMemos80',JSON.stringify(practiceMemos));
+  renderPractice();
+}
+
+/* Swing Lab */
+const cues={
+  'ウェッジ':'20〜30y。クラブの重さを感じ、最下点だけを探す。',
+  '9I':'最下点をボールの先へ。胸郭で最後まで運ぶ。',
+  '5UT':'長くなっても当てにいかない。最下点管理を維持。',
+  '7W':'横へ引っ張らず、大きな縦ブランコを胸郭で運ぶ。',
+  'Driver':'最大の縦ブランコ。インパクトで出力を足さない。'
+};
+const clubShort={'ウェッジ':'W','9I':'9I','5UT':'UT','7W':'7W','Driver':'D'};
+let swing={
+  club:'ウェッジ',level:'60%',low:null,impact:null,balance:null,
+  records:JSON.parse(localStorage.getItem('swingRecords80')||'[]')
+};
+function activate(id,attr,value){
+  document.querySelectorAll(`#${id} button`).forEach(b=>b.classList.remove('active'));
+  const el=document.querySelector(`#${id} button[data-${attr}="${value}"]`);
+  if(el)el.classList.add('active');
+}
+function setClub(c){
+  swing.club=c; activate('clubButtons','club',c);
+  document.getElementById('clubCue').textContent=cues[c];
+  document.getElementById('sClub').textContent=clubShort[c];
+  updateSwingFocus(c);
+}
+document.querySelectorAll('#clubButtons button').forEach(b=>b.onclick=()=>setClub(b.dataset.club));
+document.querySelectorAll('#powerLevel button').forEach(b=>b.onclick=()=>{swing.level=b.dataset.level;activate('powerLevel','level',swing.level)});
+function bind(id,key){
+  document.querySelectorAll(`#${id} button`).forEach(b=>b.onclick=()=>{swing[key]=b.dataset[key];activate(id,key,swing[key])});
+}
+bind('lowButtons','low'); bind('impactButtons','impact'); bind('balanceButtons','balance');
+function updateSwingFocus(c){
+  const d=swingDetails[c];
+  if(!d) return;
+  document.getElementById('swingFocusTitle').textContent=c;
+  document.getElementById('swingStrength').textContent=d.strength;
+  document.getElementById('swingCaution').textContent=d.caution;
+  document.getElementById('swingCueText').textContent=d.cue;
+}
+function saveSwingComment(){
+  swingComment=document.getElementById('swingComment').value.trim();
+  localStorage.setItem('swingComment80',swingComment);
+  document.getElementById('swingCommentSaved').textContent=swingComment||'未入力';
+}
+
+setClub('ウェッジ'); activate('powerLevel','level','60%');
+
+document.getElementById('recordSwingBtn').onclick=()=>{
+  if(!swing.low||!swing.impact||!swing.balance){alert('3項目を選んでから記録してね。');return;}
+  swing.records.unshift({
+    n:swing.records.length+1,club:swing.club,level:swing.level,
+    low:swing.low,impact:swing.impact,balance:swing.balance,
+    time:new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})
+  });
+  localStorage.setItem('swingRecords80',JSON.stringify(swing.records));
+  swing.low=swing.impact=swing.balance=null;
+  ['lowButtons','impactButtons','balanceButtons'].forEach(id=>document.querySelectorAll(`#${id} button`).forEach(b=>b.classList.remove('active')));
+  renderSwing();
+};
+function pct(a,b){return b?Math.round(a/b*100):0}
+function renderSwing(){
+  const r=swing.records, shots=r.length;
+  const perfect=r.filter(x=>x.low==='○'&&x.impact==='○'&&x.balance==='○').length;
+  const lows=r.filter(x=>x.low==='○').length, impacts=r.filter(x=>x.impact==='○').length, balances=r.filter(x=>x.balance==='○').length;
+  const rate=pct(perfect,shots);
+  document.getElementById('sShots').textContent=shots;
+  document.getElementById('sPerfect').textContent=perfect;
+  document.getElementById('sRate').textContent=rate+'%';
+  document.getElementById('sBar').style.width=rate+'%';
+  let fb='まずウェッジで最下点を確認。';
+  if(shots>=3){
+    const arr=[{n:'最下点',v:lows/shots},{n:'出力一定',v:impacts/shots},{n:'バランス',v:balances/shots}].sort((a,b)=>a.v-b.v);
+    fb=arr[0].n==='最下点'?'次の3球はボールより最下点。':
+       arr[0].n==='出力一定'?'次の3球はインパクトで何もしない。':
+       '次の3球は出力を下げ、3秒静止。';
+    if(rate>=70)fb='安定。クラブを長くするか、出力を10%上げて確認。';
+  }
+  document.getElementById('sFeedback').textContent=fb;
+  document.getElementById('sTags').innerHTML=shots?[
+    `<span class="pill">最下点○ ${pct(lows,shots)}%</span>`,
+    `<span class="pill">出力一定○ ${pct(impacts,shots)}%</span>`,
+    `<span class="pill">静止○ ${pct(balances,shots)}%</span>`
+  ].join(''):'';
+  document.getElementById('sHistory').innerHTML=r.slice(0,14).map(x=>`
+    <div class="row"><div>#${x.n}</div><div><strong>${x.club}</strong> ${x.level}<br><span class="small">${x.time}</span></div><div>${x.low} / ${x.impact} / ${x.balance}</div></div>
+  `).join('')||'<div class="small" style="padding:12px 0">まだ記録はありません。</div>';
+  const sc=document.getElementById('swingComment');
+  if(sc){
+    sc.value=swingComment;
+    document.getElementById('swingCommentSaved').textContent=swingComment||'未入力';
+  }
+}
+function resetSwing(){
+  if(confirm('Swing Labの記録をリセットしますか？')){
+    swing.records=[];localStorage.setItem('swingRecords80','[]');renderSwing();
+  }
+}
+renderSwing();
+
+/* Course Mode */
+let dist=null, lie=null;
+const courseRules={
+  '15':{
+    '上り':['54°','キャリー8〜9y目安。ショートNG。'],
+    '平坦':['54°','キャリー7〜8y目安。ダフリ・トップNG。'],
+    '下り':['58°','オーバーNG。落とし所を手前に。']
+  },
+  '20':{
+    '上り':['54°','少し強め。ショートを避ける。'],
+    '平坦':['54°','基準ショット。最下点優先。'],
+    '下り':['58°','高さとスピンで止める意識。']
+  },
+  '30':{
+    '上り':['54°','キャリー多め。'],
+    '平坦':['54°','基準距離。'],
+    '下り':['58°','落とし所を手前に。']
+  },
+  '40':{
+    '上り':['54°','振り幅一定。'],
+    '平坦':['54°','胸郭で運ぶ。'],
+    '下り':['58°','出力を足さない。']
+  },
+  '50':{
+    '上り':['54°','ショートNG。'],
+    '平坦':['54°','再現性優先。'],
+    '下り':['58°','オーバーNG。']
+  },
+  '80':{
+    '上り':['9I','クォーター基準。'],
+    '平坦':['PW / 9I','再現性の高い方を選択。'],
+    '下り':['PW','高さを抑えて距離感優先。']
+  },
+  '100':{
+    '上り':['9I','必要なら少し振り幅を増やす。'],
+    '平坦':['9I','クォーター基準。'],
+    '下り':['9I','飛ばし過ぎ注意。']
+  }
+};
+document.querySelectorAll('#distanceButtons button').forEach(b=>b.onclick=()=>{dist=b.dataset.distance;activate('distanceButtons','distance',dist);renderCourse();});
+document.querySelectorAll('#lieButtons button').forEach(b=>b.onclick=()=>{lie=b.dataset.lie;activate('lieButtons','lie',lie);renderCourse();});
+function renderCourse(){
+  if(!dist||!lie)return;
+  const r=courseRules[dist][lie];
+  document.getElementById('courseClub').textContent=`${dist}y・${lie} → ${r[0]}`;
+  document.getElementById('courseAdvice').textContent=r[1];
+}
+
+renderPractice();
+</script>
+</body>
+</html>
